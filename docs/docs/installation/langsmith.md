@@ -11,6 +11,11 @@ LangSmith 가입을 위해 [https://smith.langchain.com/](https://smith.langchai
 
 ![img](langsmith_0.png)
 
-### Step 1: LangSmith WorkSpace
-LangSmith  접속하면 다음과 같은 화면이 나옵니다.
+### Step 2: LangSmith WorkSpace
+
+LangSmith 접속하면 다음과 같은 화면이 나옵니다.
 ![img](langsmith_1.png)
+
+### Step 3: API Key 발급
+Settings > API Keys 탭에서 API Key 를 발급받습니다.
+![img](langsmith_2.png)
