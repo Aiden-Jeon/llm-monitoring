@@ -17,9 +17,9 @@ Langfuse의 Prompt Registry 기능을 사용하여 프롬프트를 중앙에서 
 
 Self-hosting 환경에서 Langfuse 서버를 실행해야 합니다.
 
-<Admonition type="info">
+:::info
   [Self-Hosting Langfuse 설치 가이드](../installation/self-hosting-langfuse.md)를 참고해 Langfuse 서버를 실행합니다.
-</Admonition>
+:::
 
 ### 2. 환경 변수 설정
 

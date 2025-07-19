@@ -17,9 +17,9 @@ Databricks MLflow의 Prompt Registry 기능을 사용하여 프롬프트를 중�
 
 Databricks Free Edition에 가입하여 MLflow를 사용할 수 있습니다.
 
-<Admonition type="info">
+:::info
   [Databricks MLflow 설치 가이드](../installation/databricks-mlflow.md)를 참고해 Databricks 계정을 설정합니다.
-</Admonition>
+:::
 
 ### 2. Unity Catalog 설정
 

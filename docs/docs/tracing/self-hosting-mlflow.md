@@ -3,7 +3,6 @@ sidebar_position: 1
 ---
 
 
-
 # Self-Hosting MLflow
 
 Self hosting 하는 MLflow에서 Tracing을 사용하는 방법에 대해서 설명합니다.
@@ -13,8 +12,13 @@ Self hosting 하는 MLflow에서 Tracing을 사용하는 방법에 대해서 설
 Self-hosting 환경에서 MLflow를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
 
 ## Requirements
+### 1. MLflow 서버 실행
 
-### 1. 환경 변수 설정
+:::info
+  [Self-Hosting MLflow 설치 가이드](../installation/self-hosting-mlflow.md) 를 참고해 mlflow server 를 실행합니다.
+:::
+
+### 2. 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
 - mlflow 에 로깅하기 위한 환경변수
@@ -35,13 +39,6 @@ OPENAI_API_BASE=https://api.openai.com/v1
 # TAVILY
 TAVILY_API_KEY=your_tavily_api_key
 ```
-
-### 2. MLflow 서버 실행
-
-:::info
-  [Self-Hosting MLflow 설치 가이드](../installation/self-hosting-mlflow.md) 를 참고해 mlflow server 를 실행합니다.
-:::
-
 
 ## Code
 
@@ -107,9 +104,9 @@ from langchain_tavily import TavilySearch
 web_search_tool = TavilySearch(max_results=1)
 ```
 
-<Admonition type="info">
+:::info
   Tavily API 키는 <a href="../installation/tavily.md">tavily</a> 를 참고해 발급 받을 수 있습니다.
-</Admonition>
+:::
 
 ### LangGraph 애플리케이션 구성
 
