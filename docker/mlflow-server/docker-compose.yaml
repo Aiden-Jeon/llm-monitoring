@@ -1,13 +1,13 @@
 services:
   # PostgreSQL database
-  postgres:
+  mlflow-postgres:
     image: postgres:latest
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: mlflowdb
     ports:
-      - 5432:5432
+      - 5433:5432
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -16,14 +16,14 @@ services:
       timeout: 5s
       retries: 5
   # MinIO server
-  minio:
+  mlflow-minio:
     image: minio/minio
     expose:
       - "9000"
     ports:
-      - "9000:9000"
+      - "9010:9000"
       # MinIO Console is available at http://localhost:9001
-      - "9001:9001"
+      - "9011:9001"
     environment:
       MINIO_ROOT_USER: "minio_user"
       MINIO_ROOT_PASSWORD: "minio_password"
@@ -37,11 +37,11 @@ services:
   minio-create-bucket:
     image: minio/mc
     depends_on:
-      minio:
+      mlflow-minio:
         condition: service_healthy
     entrypoint: >
       bash -c "
-      mc alias set minio http://minio:9000 minio_user minio_password &&
+      mc alias set minio http://mlflow-minio:9000 minio_user minio_password &&
       if ! mc ls minio/bucket; then
         mc mb minio/bucket
       else
@@ -53,7 +53,7 @@ services:
       context: .
       dockerfile: mlflow.Dockerfile
     environment:
-      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      MLFLOW_S3_ENDPOINT_URL: http://mlflow-minio:9000
       AWS_ACCESS_KEY_ID: minio_user
       AWS_SECRET_ACCESS_KEY: minio_password
     ports:
@@ -61,13 +61,13 @@ services:
     volumes:
       - ./mlflow-data:/mlflow-data
     depends_on:
-      postgres:
+      mlflow-postgres:
         condition: service_healthy
       minio-create-bucket:
         condition: service_completed_successfully
     command: >
       mlflow server
-      --backend-store-uri postgresql://user:password@postgres:5432/mlflowdb
+      --backend-store-uri postgresql://user:password@mlflow-postgres:5432/mlflowdb
       --artifacts-destination s3://bucket
       --host 0.0.0.0
       --port 5000
