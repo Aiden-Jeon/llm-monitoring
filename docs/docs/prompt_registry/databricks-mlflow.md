@@ -3,29 +3,36 @@ sidebar_position: 2
 ---
 
 
-# Databricks MLflow
+# Databricks MLflow Prompt Registry
 
-Databricks에서 제공하는 Managed MLflow를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
+Databricks에서 제공하는 Managed MLflow를 사용하여 프롬프트를 버전 관리하고 등록하는 방법에 대해 설명합니다.
 
 ## 개요
 
-Databricks는 MLflow의 공식 Managed 서비스를 제공하는 회사 중 하나입니다. Databricks Free Edition을 통해 무료로 MLflow를 사용할 수 있으며, 별도의 서버 설정 없이 바로 사용할 수 있습니다.
+Databricks MLflow의 Prompt Registry 기능을 사용하여 프롬프트를 중앙에서 관리하고 버전을 추적할 수 있습니다. Databricks Unity Catalog와 통합되어 있어 엔터프라이즈급 프롬프트 관리가 가능합니다.
 
 ## Requirements
 
 ### 1. Databricks 계정 설정
 
-:::info
+Databricks Free Edition에 가입하여 MLflow를 사용할 수 있습니다.
+
+<Admonition type="info">
   [Databricks MLflow 설치 가이드](../installation/databricks-mlflow.md)를 참고해 Databricks 계정을 설정합니다.
-:::
+</Admonition>
 
+### 2. Unity Catalog 설정
 
+Databricks 에서 Prompt Registry 를 사용하기 위해서는 Unity Catalog 를 설정해야 합니다.
+1. Catalog 탭에서 + 버튼을 누른 후 Create a catalog 버튼을 선택합니다.
+    ![img](./databricks_mlflow_0.png)
+2. Catalog 이름을 입력합니다 튜토리얼에서는 main 을 사용합니다.
+    ![img](./databricks_mlflow_1.png)
+3. 다음과 같이 생성된 카탈로그를 확인할 수 있습니다.
+    ![img](./databricks_mlflow_2.png)
 ### 2. 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
-- Databricks Mlflow 를 사용하기 위한 환경 변수
-- LLM을 사용하기 위한 환경 변수
-- Tavily를 사용하기 위한 환경 변수
 
 ```bash
 # DATABRICKS MLFLOW
@@ -103,24 +110,107 @@ web_search_tool = TavilySearch(max_results=1)
 :::info
   Tavily API 키는 <a href="../installation/tavily.md">tavily</a>를 참고해 발급 받을 수 있습니다.
 :::
-### LangGraph 애플리케이션 구성
+### Prompt Registry
 
-#### Prompt
+#### 1. 프롬프트 템플릿 정의
 
 RAG(Retrieval-Augmented Generation) 애플리케이션을 위한 프롬프트를 정의합니다:
 
 ```python
-prompt = """You are a professor and expert in explaining complex topics in a way that is easy to understand. 
-Your job is to answer the provided question so that even a 5 year old can understand it. 
-You have provided with relevant background context to answer the question.
+# Define the prompt template
+plain_prompt_template = """
+You are an expert at explaining complex topics in simple terms that a 5-year-old could understand. 
 
-Question: {question} 
+Your task is to take a complex question and context information, then provide a clear, simple explanation using:
+- Simple words and concepts
+- Analogies and examples from everyday life
+- Short sentences
+- Engaging and friendly tone
+
+Keep your explanation concise but complete.
+
+Question: {question}
 
 Context: {context}
 
-Answer:"""
-print("Prompt Template: ", prompt)
+Please explain this in simple terms that a 5-year-old would understand:
+"""
 ```
+
+#### 2. MLflow에 프롬프트 등록
+
+Databricks Mlflow 에서는 프롬프트를 등록하기 위해서 catalog 와 schema 이름을 지정해야 합니다.
+```python
+import mlflow
+
+catalog_name = "main"  # replace with your catalog name
+schema_name = "default"  # replace with your schema name
+system_prompt = mlflow.genai.register_prompt(
+    name=f"{catalog_name}.{schema_name}.concise_prompt",
+    template=plain_prompt_template,
+    # commit_message="Initial version of prompt",
+)
+mlflow.genai.set_prompt_alias(
+    f"{catalog_name}.{schema_name}.concise_prompt",
+    alias="production",
+    version=system_prompt.version,
+)
+```
+
+#### 3. MLflow에서 프롬프트 로드
+Databricks 에서 prompt 를 불러올 때는 version 혹은 alias 를 사용해 불러옵니다.
+오픈소스 MLflow 와 다르게 catalog.schmea 를 주어야 합니다.
+
+- Version 으로 불러오는 경우 `/` 와 특정 버전을 명시해 불러올 수 있습니다.
+    ```
+    prompts:/{catalog_name}.{schema_name}.{prompt_name}/{version}
+    ```
+- Alias 로 불러오는 경우 `@` 와 alias 이름을 명시해 불러올 수 있습니다.
+    ```
+    prompts:/{catalog_name}.{schema_name}.{prompt_name}@{alias_name}
+    ```
+
+```python
+from langchain_core.prompts import ChatPromptTemplate
+
+# Create LangChain prompt object
+mlflow_prompt = mlflow.genai.load_prompt(
+    f"prompts:/{catalog_name}.{schema_name}.concise_prompt@production"
+)
+
+langchain_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            # IMPORTANT: Convert prompt template from double to single curly braces format
+            "system",
+            mlflow_prompt.to_single_brace_format(),
+        ),
+    ]
+)
+```
+
+
+## Databricks UI에서 Prompt 확인
+
+1. Databricks Workspace에 접속합니다.
+2. 왼쪽 사이드바에서 "Experiments" 탭을 클릭합니다.
+3. 생성한 experiment 에 experiment type 을 GenAI apps & agents 로 수정합니다.
+    ![img](./databricks_mlflow_3.png)
+4. 다음과 같이 llm 에서 사용하는 기능들이 활성화됩니다.
+    ![img](./databricks_mlflow_4.png)
+5. Prompts 로 가서 앞서 생성한 catalog 와 schema 를 지정해줍니다.
+    ![img](./databricks_mlflow_5.png)
+    ![img](./databricks_mlflow_6.png)
+6. 등록된 prompt 들을 볼 수 있습니다.
+    ![img](./databricks_mlflow_7.png)
+7. 각 프롬프트의 버전과 별칭을 확인할 수 있습니다.
+    ![img](./databricks_mlflow_8.png)
+
+
+## Prompt Test
+불러온 프롬프트가 정상적으로 수행되는 지 확인합니다.
+
+### LangGraph 애플리케이션 구성
 
 #### Graph State
 
@@ -180,7 +270,7 @@ def explain(state: GraphState):
     """
     question = state["question"]
     documents = state.get("documents", [])
-    formatted = prompt.format(
+    formatted = langchain_prompt.format(
         question=question, 
         context="\n".join([d.page_content for d in documents])
     )
@@ -229,13 +319,3 @@ response = app.invoke({"question": question})
 # 응답 출력
 print(response["messages"][0].content)
 ```
-
-## Databricks UI에서 Trace 확인
-
-1. Databricks Workspace에 접속합니다.
-2. 왼쪽 사이드바에서 "Experiments" 탭을 클릭합니다.
-3. 생성한 experiment 에 들어가서 상단의 trace 탭을 선택하면 로깅된 trace 들을 확인할 수 있습니다.
-    ![img](./databricks_mlflow_0.png)
-4. 실행된 추적을 클릭하여 상세 정보를 확인할 수 있습니다.
-    ![img](./databricks_mlflow_1.png)
-5. 각 단계별 실행 시간, 입력/출력, 메타데이터 등을 확인할 수 있습니다.

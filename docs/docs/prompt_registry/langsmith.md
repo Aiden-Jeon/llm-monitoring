@@ -4,13 +4,13 @@ sidebar_position: 4
 
 
 
-# LangSmith
+# LangSmith Prompt Registry
 
-LangSmith를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
+LangSmith를 사용하여 프롬프트를 버전 관리하고 등록하는 방법에 대해 설명합니다.
 
 ## 개요
 
-LangSmith는 LangChain에서 공식적으로 제공하는 개발자 플랫폼입니다. LangChain 애플리케이션의 실행 과정을 추적하고, 디버깅하며, 성능을 최적화할 수 있는 도구를 제공합니다.
+LangSmith의 Prompt Registry 기능을 사용하여 프롬프트를 중앙에서 관리하고 버전을 추적할 수 있습니다. LangSmith는 LangChain에서 공식적으로 제공하는 개발자 플랫폼으로, 프롬프트 관리 기능도 제공합니다.
 
 ## Requirements
 
@@ -25,9 +25,6 @@ LangSmith 계정을 생성하여 API 키를 발급받아야 합니다.
 ### 2. 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
-- LangSmith를 사용하기 위한 환경 변수
-- LLM을 사용하기 위한 환경 변수
-- Tavily를 사용하기 위한 환경 변수
 
 ```bash
 # LANGSMITH
@@ -43,7 +40,6 @@ OPENAI_API_BASE=https://api.openai.com/v1
 
 # TAVILY
 TAVILY_API_KEY=your_tavily_api_key
-
 ```
 
 ## Code
@@ -61,9 +57,19 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=".env", override=True)
 ```
 
-#### 2. LLM 모델 설정
+#### 2. LangSmith 설정
 
-LangSmith는 환경 변수를 통해 자동으로 추적이 활성화됩니다.
+LangSmith 클라이언트를 초기화합니다.
+
+```python
+import os
+from langsmith import Client
+
+LANGSMITH_API_KEY = os.getenv("LANGSMITH_API_KEY")
+client = Client(api_key=LANGSMITH_API_KEY)
+```
+
+#### 3. LLM 모델 설정
 
 ```python
 import os
@@ -82,7 +88,7 @@ llm = ChatOpenAI(
 )
 ```
 
-#### 3. Tavily 검색 도구
+#### 4. Tavily 검색 도구
 
 웹 검색을 위한 Tavily 도구를 설정합니다:
 
@@ -96,24 +102,115 @@ web_search_tool = TavilySearch(max_results=1)
 :::info
   Tavily API 키는 <a href="../installation/tavily.md">tavily</a>를 참고해 발급 받을 수 있습니다.
 :::
-### LangGraph 애플리케이션 구성
 
-#### Prompt
+### Prompt Registry
+
+#### 1. 프롬프트 템플릿 정의
 
 RAG(Retrieval-Augmented Generation) 애플리케이션을 위한 프롬프트를 정의합니다:
 
 ```python
-prompt = """You are a professor and expert in explaining complex topics in a way that is easy to understand. 
-Your job is to answer the provided question so that even a 5 year old can understand it. 
-You have provided with relevant background context to answer the question.
+# Define the prompt template
+plain_prompt_template = """
+You are an expert at explaining complex topics in simple terms that a 5-year-old could understand. 
 
-Question: {question} 
+Your task is to take a complex question and context information, then provide a clear, simple explanation using:
+- Simple words and concepts
+- Analogies and examples from everyday life
+- Short sentences
+- Engaging and friendly tone
+
+Keep your explanation concise but complete.
+
+Question: {question}
 
 Context: {context}
 
-Answer:"""
-print("Prompt Template: ", prompt)
+Please explain this in simple terms that a 5-year-old would understand:
+"""
 ```
+
+#### 2. LangChain 프롬프트 템플릿 생성
+
+```python
+from langchain_core.prompts import ChatPromptTemplate
+
+# Define the prompt template
+langsmith_prompt_template = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """You are an expert at explaining complex topics in simple terms that a 5-year-old could understand. 
+
+Your task is to take a complex question and context information, then provide a clear, simple explanation using:
+- Simple words and concepts
+- Analogies and examples from everyday life
+- Short sentences
+- Engaging and friendly tone
+
+Keep your explanation concise but complete.
+
+Question: {question}
+
+Context: {context}
+
+Please explain this in simple terms that a 5-year-old would understand:
+""",
+        )
+    ]
+)
+```
+
+#### 3. LangSmith에 프롬프트 등록
+LangSmith 에서는 prompt 를 github 과 같이 해시태그로 관리합니다.
+이를 Github 과 연동해서 같이 관리할 수 있습니다.
+
+:::warning
+LangSmith는 프롬프트의 변경(diff)을 관리하기 때문에, 변경사항이 없을 경우 다음과 같은 에러가 발생하며 push되지 않습니다.
+```json
+{"detail":"Nothing to commit: prompt has not changed since latest commit"}
+```
+:::
+
+```python
+try:
+    client.push_prompt(
+        "concise_prompt",
+        object=langsmith_prompt_template,
+        description="A prompt for explaining complex topics in simple terms that a 5-year-old could understand",
+    )
+except Exception as e:
+    print(e)
+```
+
+#### 4. LangSmith에서 프롬프트 로드
+
+다음과 같이 해시태그를 명시해서 불러올 수 있습니다.
+- ```{PROMPT_NAME}:{HASH_TAG}```
+
+예를 들어서 제가 생성한 프롬프트는 다음과 같이 불러올 수 있습니다.
+- ```concise_prompt:concise_prompt```
+
+만약 명시하지 않은 경우 가장 최신의 commit 을 불러옵니다.
+
+```python
+langchain_prompt = client.pull_prompt("concise_prompt", include_model=True)
+```
+
+## LangSmith UI에서 Prompt 확인
+
+1. 브라우저에서 [LangSmith](https://smith.langchain.com/)에 접속합니다.
+2. 로그인 후 프로젝트를 선택합니다.
+3. 왼쪽 사이드바에서 "Prompts" 탭을 클릭합니다.
+4. 등록된 프롬프트 목록을 확인할 수 있습니다.
+    ![img](./langsmith_0.png)
+5. 각 프롬프트의 버전과 메타데이터를 확인할 수 있습니다.
+    ![img](./langsmith_1.png)
+
+## Prompt Test
+불러온 프롬프트가 정상적으로 수행되는 지 확인합니다.
+
+### LangGraph 애플리케이션 구성
 
 #### Graph State
 
@@ -173,9 +270,9 @@ def explain(state: GraphState):
     """
     question = state["question"]
     documents = state.get("documents", [])
-    formatted = prompt.format(
-        question=question, 
-        context="\n".join([d.page_content for d in documents])
+
+    formatted = langchain_prompt.format(
+        question=question, context="\n".join([d.page_content for d in documents])
     )
     generation = llm.invoke([HumanMessage(content=formatted)])
     return {"question": question, "messages": [generation]}
@@ -212,8 +309,6 @@ display(Image(app.get_graph().draw_mermaid_png()))
 
 ### Graph Test
 
-LangSmith는 환경 변수를 통해 자동으로 추적이 활성화되므로 별도의 설정 없이 실행할 수 있습니다:
-
 ```python
 # 질문 정의
 question = "What is complexity economics?"
@@ -224,13 +319,3 @@ response = app.invoke({"question": question})
 # 응답 출력
 print(response["messages"][0].content)
 ```
-
-## LangSmith UI에서 Trace 확인
-
-1. 브라우저에서 [LangSmith](https://smith.langchain.com/)에 접속합니다.
-2. 로그인 후 프로젝트를 선택합니다.
-3. Runs 탭에서 실행된 추적을 확인할 수 있습니다.
-    ![img](./langsmith_0.png)
-4. 각 추적을 클릭하여 상세 정보를 확인할 수 있습니다.
-    ![img](./langsmith_1.png)
-5. 각 단계별 실행 시간, 입력/출력, 메타데이터 등을 확인할 수 있습니다.

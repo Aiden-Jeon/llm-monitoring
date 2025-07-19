@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 ---
-import Admonition from '@theme/Admonition';
+
 
 
 # Self-Hosting MLflow
@@ -38,9 +38,9 @@ TAVILY_API_KEY=your_tavily_api_key
 
 ### 2. MLflow 서버 실행
 
-<Admonition type="info">
+:::info
   [Self-Hosting MLflow 설치 가이드](../installation/self-hosting-mlflow.md) 를 참고해 mlflow server 를 실행합니다.
-</Admonition>
+:::
 
 
 ## Code

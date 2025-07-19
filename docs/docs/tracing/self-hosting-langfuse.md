@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 ---
-import Admonition from '@theme/Admonition';
+
 
 # Self-Hosting Langfuse
 
@@ -17,9 +17,9 @@ Langfuse는 LLM 애플리케이션을 위한 오픈소스 관찰성 플랫폼입
 
 Self-hosting 환경에서 Langfuse 서버를 실행해야 합니다.
 
-<Admonition type="info">
+:::info
   [Self-Hosting Langfuse 설치 가이드](../installation/self-hosting-langfuse.md)를 참고해 Langfuse 서버를 실행합니다.
-</Admonition>
+:::
 
 envfile 을 이용해 실행할 경우 아래 환경 변수에서 `LANGFUSE_SECRET_KEY`, `LANGFUSE_PUBLIC_KEY` 를 수정할 필요가 없습니다.
 
@@ -108,10 +108,9 @@ from langchain_tavily import TavilySearch
 web_search_tool = TavilySearch(max_results=1)
 ```
 
-<Admonition type="info">
+:::info
   Tavily API 키는 <a href="../installation/tavily.md">tavily</a>를 참고해 발급 받을 수 있습니다.
-</Admonition>
-
+:::
 ### LangGraph 애플리케이션 구성
 
 #### Prompt
