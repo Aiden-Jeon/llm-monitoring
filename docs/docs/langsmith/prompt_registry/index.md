@@ -3,28 +3,31 @@ sidebar_position: 3
 ---
 
 
-
 # 03-Prompt Registry
-
-LangSmith를 사용하여 프롬프트를 버전 관리하고 등록하는 방법에 대해 설명합니다.
 
 ## 개요
 
+LangSmith를 사용하여 프롬프트를 버전 관리하고 등록하는 방법에 대해 설명합니다.
 LangSmith의 Prompt Registry 기능을 사용하여 프롬프트를 중앙에서 관리하고 버전을 추적할 수 있습니다. LangSmith는 LangChain에서 공식적으로 제공하는 개발자 플랫폼으로, 프롬프트 관리 기능도 제공합니다.
 
+튜토리얼에서 사용하는 코드는
+[Github](https://github.com/Aiden-Jeon/llm-monitoring/blob/main/notebooks/langsmith/02_prompt.ipynb)
+에서 확인할 수 있습니다.
+
 ## Requirements
-
-### 1. LangSmith 계정 설정
-
-LangSmith 계정을 생성하여 API 키를 발급받아야 합니다.
-
-:::info
-  [LangSmith 설치 가이드](../installation/index.md)를 참고해 LangSmith 계정을 설정합니다.
-:::
-
-### 2. 환경 변수 설정
+### 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
+환경 변수는 3가지 섹션으로 구성되어 있습니다.
+1. LangSmith를 사용하기 위한 환경 변수
+    :::info
+    [LangSmith 설치 가이드](../installation/index.md)를 참고해 LangSmith 계정을 설정합니다.
+    :::
+2. LLM을 사용하기 위한 환경 변수
+3. Tavily를 사용하기 위한 환경 변수
+    :::info
+    Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
+    :::
 
 ```bash
 # LANGSMITH

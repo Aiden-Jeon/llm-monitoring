@@ -3,31 +3,32 @@ sidebar_position: 2
 ---
 
 
-
 # 02-Tracing
 
-LangSmith를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
-
 ## 개요
-
+LangSmith를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
 LangSmith는 LangChain에서 공식적으로 제공하는 개발자 플랫폼입니다. LangChain 애플리케이션의 실행 과정을 추적하고, 디버깅하며, 성능을 최적화할 수 있는 도구를 제공합니다.
+
+튜토리얼에서 사용하는 코드는
+[Github](https://github.com/Aiden-Jeon/llm-monitoring/blob/main/notebooks/langsmith/01_tracing.ipynb)
+에서 확인할 수 있습니다.
+
 
 ## Requirements
 
-### 1. LangSmith 계정 설정
-
-LangSmith 계정을 생성하여 API 키를 발급받아야 합니다.
-
-:::info
-  [LangSmith 설치 가이드](../installation/index.md)를 참고해 LangSmith 계정을 설정합니다.
-:::
-
-### 2. 환경 변수 설정
+### 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
-- LangSmith를 사용하기 위한 환경 변수
-- LLM을 사용하기 위한 환경 변수
-- Tavily를 사용하기 위한 환경 변수
+환경 변수는 3가지 섹션으로 구성되어 있습니다.
+1. LangSmith를 사용하기 위한 환경 변수
+    :::info
+    [LangSmith 설치 가이드](../installation/index.md)를 참고해 LangSmith 계정을 설정합니다.
+    :::
+2. LLM을 사용하기 위한 환경 변수
+3. Tavily를 사용하기 위한 환경 변수
+    :::info
+    Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
+    :::
 
 ```bash
 # LANGSMITH
