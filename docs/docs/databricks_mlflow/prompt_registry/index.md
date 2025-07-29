@@ -4,23 +4,19 @@ sidebar_position: 3
 
 # 03-Prompt Registry
 
-Databricks에서 제공하는 Managed MLflow를 사용하여 프롬프트를 버전 관리하고 등록하는 방법에 대해 설명합니다.
-
 ## 개요
+
+Databricks에서 제공하는 Managed MLflow를 사용하여 프롬프트를 버전 관리하고 등록하는 방법에 대해 설명합니다.
 
 Databricks MLflow의 Prompt Registry 기능을 사용하여 프롬프트를 중앙에서 관리하고 버전을 추적할 수 있습니다. Databricks Unity Catalog와 통합되어 있어 엔터프라이즈급 프롬프트 관리가 가능합니다.
 
+
+튜토리얼에서 사용하는 코드는
+[Github](https://github.com/Aiden-Jeon/llm-monitoring/blob/main/notebooks/databricks_mlflow/02_prompt.ipynb)
+에서 확인할 수 있습니다.
+
 ## Requirements
-
-### 1. Databricks 계정 설정
-
-Databricks Free Edition에 가입하여 MLflow를 사용할 수 있습니다.
-
-:::info
-  [Databricks MLflow 설치 가이드](../installation/index.md)를 참고해 Databricks 계정을 설정합니다.
-:::
-
-### 2. Unity Catalog 설정
+### Unity Catalog 설정
 
 Databricks 에서 Prompt Registry 를 사용하기 위해서는 Unity Catalog 를 설정해야 합니다.
 1. Catalog 탭에서 + 버튼을 누른 후 Create a catalog 버튼을 선택합니다.
@@ -29,17 +25,30 @@ Databricks 에서 Prompt Registry 를 사용하기 위해서는 Unity Catalog �
     ![img](./databricks_mlflow_1.png)
 3. 다음과 같이 생성된 카탈로그를 확인할 수 있습니다.
     ![img](./databricks_mlflow_2.png)
-### 2. 환경 변수 설정
+
+### 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
+환경 변수는 3가지 섹션으로 구성되어 있습니다.
+
+1. Databricks Mlflow 를 사용하기 위한 환경 변수
+    :::info
+    [Databricks MLflow API Key 발급](../installation/#api-key-발급)를 참고해 해 토큰들을 받습니다..
+    :::
+2. Tavily를 사용하기 위한 환경 변수
+    :::info
+    Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
+    :::
+3. LLM을 사용하기 위한 환경 변수
+
 
 ```bash
 # DATABRICKS MLFLOW
-DATABRICKS_HOST="https://<UNIQUE_ID>.cloud.databricks.com"
-DATABRICKS_TOKEN="<redacted>"
-MLFLOW_TRACKING_URI="databricks"
-MLFLOW_REGISTRY_URI="databricks-uc"
-MLFLOW_EXPERIMENT_ID="<redacted>"
+DATABRICKS_TOKEN=<redacted>
+DATABRICKS_HOST=https://<UNIQUE_ID>.cloud.databricks.com
+MLFLOW_TRACKING_URI=databricks
+MLFLOW_REGISTRY_URI=databricks-uc
+MLFLOW_EXPERIMENT_ID=<redacted>
 
 # LLM
 MODEL_NAME=gpt-3.5-turbo
@@ -191,18 +200,12 @@ langchain_prompt = ChatPromptTemplate.from_messages(
 
 ## Databricks UI에서 Prompt 확인
 
-1. Databricks Workspace에 접속합니다.
-2. 왼쪽 사이드바에서 "Experiments" 탭을 클릭합니다.
-3. 생성한 experiment 에 experiment type 을 GenAI apps & agents 로 수정합니다.
-    ![img](./databricks_mlflow_3.png)
-4. 다음과 같이 llm 에서 사용하는 기능들이 활성화됩니다.
-    ![img](./databricks_mlflow_4.png)
-5. Prompts 로 가서 앞서 생성한 catalog 와 schema 를 지정해줍니다.
+1. Prompts 로 가서 앞서 생성한 catalog 와 schema 를 지정해줍니다.
     ![img](./databricks_mlflow_5.png)
     ![img](./databricks_mlflow_6.png)
-6. 등록된 prompt 들을 볼 수 있습니다.
+2. 등록된 prompt 들을 볼 수 있습니다.
     ![img](./databricks_mlflow_7.png)
-7. 각 프롬프트의 버전과 별칭을 확인할 수 있습니다.
+3. 각 프롬프트의 버전과 별칭을 확인할 수 있습니다.
     ![img](./databricks_mlflow_8.png)
 
 

@@ -5,35 +5,39 @@ sidebar_position: 2
 
 # 02-Tracing
 
-Databricks에서 제공하는 Managed MLflow를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
-
 ## 개요
+Databricks에서 제공하는 Managed MLflow를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링 할 수 있습니다.
 
-Databricks는 MLflow의 공식 Managed 서비스를 제공하는 회사 중 하나입니다. Databricks Free Edition을 통해 무료로 MLflow를 사용할 수 있으며, 별도의 서버 설정 없이 바로 사용할 수 있습니다.
+튜토리얼에서 사용하는 코드는
+[Github](https://github.com/Aiden-Jeon/llm-monitoring/blob/main/notebooks/databricks_mlflow/01_tracing.ipynb)
+에서 확인할 수 있습니다.
+
 
 ## Requirements
 
-### 1. Databricks 계정 설정
-
-:::info
-  [Databricks MLflow 설치 가이드](../installation/index.md)를 참고해 Databricks 계정을 설정합니다.
-:::
-
-
-### 2. 환경 변수 설정
+### 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
-- Databricks Mlflow 를 사용하기 위한 환경 변수
-- LLM을 사용하기 위한 환경 변수
-- Tavily를 사용하기 위한 환경 변수
+환경 변수는 3가지 섹션으로 구성되어 있습니다.
+
+1. Databricks Mlflow 를 사용하기 위한 환경 변수
+    :::info
+    [Databricks MLflow API Key 발급](../installation/#api-key-발급)를 참고해 해 토큰들을 받습니다..
+    :::
+2. Tavily를 사용하기 위한 환경 변수
+    :::info
+    Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
+    :::
+3. LLM을 사용하기 위한 환경 변수
+
 
 ```bash
 # DATABRICKS MLFLOW
-DATABRICKS_HOST="https://<UNIQUE_ID>.cloud.databricks.com"
-DATABRICKS_TOKEN="<redacted>"
-MLFLOW_TRACKING_URI="databricks"
-MLFLOW_REGISTRY_URI="databricks-uc"
-MLFLOW_EXPERIMENT_ID="<redacted>"
+DATABRICKS_TOKEN=<redacted>
+DATABRICKS_HOST=https://<UNIQUE_ID>.cloud.databricks.com
+MLFLOW_TRACKING_URI=databricks
+MLFLOW_REGISTRY_URI=databricks-uc
+MLFLOW_EXPERIMENT_ID=<redacted>
 
 # LLM
 MODEL_NAME=gpt-3.5-turbo
@@ -100,14 +104,11 @@ from langchain_tavily import TavilySearch
 web_search_tool = TavilySearch(max_results=1)
 ```
 
-:::info
-  Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
-:::
 ### LangGraph 애플리케이션 구성
 
 #### Prompt
 
-RAG(Retrieval-Augmented Generation) 애플리케이션을 위한 프롬프트를 정의합니다:
+RAG(Retrieval-Augmented Generation) 애플리케이션을 위한 프롬프트를 정의합니다.
 
 ```python
 prompt = """You are a professor and expert in explaining complex topics in a way that is easy to understand. 
@@ -235,7 +236,7 @@ print(response["messages"][0].content)
 1. Databricks Workspace에 접속합니다.
 2. 왼쪽 사이드바에서 "Experiments" 탭을 클릭합니다.
 3. 생성한 experiment 에 들어가서 상단의 trace 탭을 선택하면 로깅된 trace 들을 확인할 수 있습니다.
-    ![img](./databricks_mlflow_0.png)
+    ![img](databricks_mlflow_0.png)
 4. 실행된 추적을 클릭하여 상세 정보를 확인할 수 있습니다.
-    ![img](./databricks_mlflow_1.png)
+    ![img](databricks_mlflow_1.png)
 5. 각 단계별 실행 시간, 입력/출력, 메타데이터 등을 확인할 수 있습니다.

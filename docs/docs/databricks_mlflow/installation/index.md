@@ -29,14 +29,36 @@ Free Edition 가입을 위해 [https://www.databricks.com/learn/free-edition](ht
 데이터브릭스에 접속하면 다음과 같은 화면이 나옵니다.
 ![img](databricks_mlflow_2.png)
 
-### Step 4: Expeirments Tab
-화면 왼쪽에서 Experiments 탭을 클릭해 mlflow 를 사용할 수 있습니다.
-![img](databricks_mlflow_3.png)
+
+## Experiment 설정
+
+1. Databricks Workspace에 접속합니다.
+2. 왼쪽 사이드바에서 "Experiments" 탭을 클릭합니다.
+3. GenAI apps & agents 을 선택합니다.
+    ![img](databricks_mlflow_3.png)
+4. 이름을 입력하고 experiement 를 생성합니다.
+    ![img](databricks_mlflow_4.png)
+5. 다음과 같이 llm 에서 사용하는 기능들이 활성화됩니다.
+    ![img](databricks_mlflow_5.png)
 
 ## API Key 발급
 
-데이터브릭스 워크스페이스에서 필요한 환경 변수들을 생성합니다.
-### Databricks Host
+데이터브릭스에 로깅을 하기 위한환경 변수들을 생성합니다.
+
+1. Develop Locally 의 View steps 를 선택합니다.
+    ![img](databricks_mlflow_6.png)
+2. Generate API Key 버튼을 눌러 API 키를 발급합니다.
+    ![img](databricks_mlflow_7.png)
+3. 발급된 environments 를 복사합니다.
+    ![img](databricks_mlflow_8.png)
+
+
+## Appendix
+### Log trace locally
+이미 Logging 이 되어서 처음 화면이 뜨지 않는 경우 다음과 같이 환경변수를 생성할 수 있습니다.
+![img](databricks_mlflow_9.png)
+
+### DATABRICKS HOST
 Databricks host 는 다음과 같은 규칙으로 설정됩니다.
 ```plaintext
 https://<UNIQUE_ID>.cloud.databricks.com
@@ -44,21 +66,11 @@ https://<UNIQUE_ID>.cloud.databricks.com
 예를 들어서 제가 생성한 workspace 의 URL 은 다음과 같습니다.
 - https://dbc-a3ca0892-0f44.cloud.databricks.com/
 
-### Experiment
-우선 실험을 로깅할 experiment 를 생성합니다.
-1. 우선 Experiments tab 에서 Custom model training 을 선택합니다.
-    ![img](databricks_mlflow_3.png)
-2. 이름을 입력하고 experiement 를 생성합니다.
-    ![img](databricks_mlflow_4.png)
-3. 오른쪽 위의 New run 버튼을 눌러 Experiment ID 를 확인합니다.
-    ![img](databricks_mlflow_5.png)
-
 ### DATABRICKS TOKEN
-다음으로 databricks token 을 발급받습니다.
+발급된 토큰을 확인하거나 토큰을 새로 발급하기 위해선 다음과 같이 확인할 수 있습니다.
 
 1. 오른쪽 프로필 아이콘을 클릭해 Settings 로 진입합니다.
-    ![img](databricks_mlflow_6.png)
 2. User > Developer > Access tokens 의 Manage 를 클릭합니다.
-    ![img](databricks_mlflow_7.png)
 3. Generate new token 을 눌러서 새로운 API Key 를 발급 받고 저장합니다.
-    ![img](databricks_mlflow_8.png)
+4. 해당 Token 는 이후 `DATABRICKS_TOKEN` 환경 변수에서 사용됩니다.
+![img](databricks_mlflow_10.png)
