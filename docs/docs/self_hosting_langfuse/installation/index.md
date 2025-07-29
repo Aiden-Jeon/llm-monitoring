@@ -1,8 +1,8 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 ---
 
-# Self-Hosting Langfuse
+# 01-Installation
 
 Self hosting 하는 langfuse 방법에 대해서 설명합니다.  
 해당 문서에서는 langfuse 3 버전을 기준으로 설명합니다.

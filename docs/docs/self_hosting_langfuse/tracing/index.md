@@ -1,35 +1,40 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 
-# Self-Hosting MLflow
+# 02-Tracing
 
-Self hosting 하는 MLflow에서 Tracing을 사용하는 방법에 대해서 설명합니다.
+Self-hosting 환경에서 Langfuse를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
 
 ## 개요
 
-Self-hosting 환경에서 MLflow를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
+Langfuse는 LLM 애플리케이션을 위한 오픈소스 관찰성 플랫폼입니다. Self-hosting 환경에서 Langfuse를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
 
 ## Requirements
-### 1. MLflow 서버 실행
+
+### 1. Langfuse 서버 실행
+
+Self-hosting 환경에서 Langfuse 서버를 실행해야 합니다.
 
 :::info
-  [Self-Hosting MLflow 설치 가이드](../installation/self-hosting-mlflow.md) 를 참고해 mlflow server 를 실행합니다.
+  [Self-Hosting Langfuse 설치 가이드](../installation/index.md)를 참고해 Langfuse 서버를 실행합니다.
 :::
+
+envfile 을 이용해 실행할 경우 아래 환경 변수에서 `LANGFUSE_SECRET_KEY`, `LANGFUSE_PUBLIC_KEY` 를 수정할 필요가 없습니다.
 
 ### 2. 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
-- mlflow 에 로깅하기 위한 환경변수
-- LLM 을 사용하기 위한 환경 변수
-- tavily 를 사용하기 위한 환경 변수
+- Langfuse를 사용하기 위한 환경 변수
+- LLM을 사용하기 위한 환경 변수
+- Tavily를 사용하기 위한 환경 변수
 
 ```bash
-# MLFLOW
-MLFLOW_S3_ENDPOINT_URL="http://0.0.0.0:9000"
-AWS_ACCESS_KEY_ID="minio_user"
-AWS_SECRET_ACCESS_KEY="minio_password"
+# LANGFUSE
+LANGFUSE_SECRET_KEY=lf_sk_1234567890
+LANGFUSE_PUBLIC_KEY=lf_pk_1234567890
+LANGFUSE_HOST="http://localhost:3000"
 
 # LLM
 MODEL_NAME=gpt-3.5-turbo
@@ -42,37 +47,36 @@ TAVILY_API_KEY=your_tavily_api_key
 
 ## Code
 
-### Environemtns
+### Environments
 
 #### 1. 환경 변수 로드
 
 실행을 위해 필요한 환경 변수를 불러옵니다.
 
 ```python
-import os
 from dotenv import load_dotenv
-from pathlib import Path
 
 # 환경 변수 로드
 load_dotenv(dotenv_path=".env", override=True)
 ```
 
-#### 2. MLflow 설정
-노트북에서 사용할 mlflow 를 설정합니다.
+#### 2. Langfuse 설정
+
+Langfuse 클라이언트를 초기화하고 연결을 확인합니다.
 
 ```python
-import mlflow
+from langfuse import get_client
+from langfuse.langchain import CallbackHandler
 
-# MLflow 추적 서버 설정
-mlflow.set_tracking_uri("http://localhost:5000")
+langfuse = get_client()
+langfuse_handler = CallbackHandler()
 
-# 실험 설정
-mlflow.set_experiment("tracing")
-
-# LangChain 자동 로깅 활성화
-mlflow.langchain.autolog()
+# 연결 확인
+if langfuse.auth_check():
+    print("Langfuse client is authenticated and ready!")
+else:
+    print("Authentication failed. Please check your credentials and host.")
 ```
-
 
 #### 3. LLM 모델 설정
 
@@ -105,12 +109,12 @@ web_search_tool = TavilySearch(max_results=1)
 ```
 
 :::info
-  Tavily API 키는 <a href="../installation/tavily.md">tavily</a> 를 참고해 발급 받을 수 있습니다.
+  Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
 :::
-
 ### LangGraph 애플리케이션 구성
 
 #### Prompt
+
 RAG(Retrieval-Augmented Generation) 애플리케이션을 위한 프롬프트를 정의합니다:
 
 ```python
@@ -123,8 +127,8 @@ Question: {question}
 Context: {context}
 
 Answer:"""
+print("Prompt Template: ", prompt)
 ```
-
 
 #### Graph State
 
@@ -212,33 +216,39 @@ graph.add_edge("explain", END)
 # 그래프 컴파일
 app = graph.compile()
 ```
-#### (Optional) Visulaize Graph
+
+#### (Optional) Visualize Graph
 
 ```python
 from IPython.display import Image, display
-
 
 display(Image(app.get_graph().draw_mermaid_png()))
 ```
 
 ### Graph Test
 
+Langfuse 핸들러를 콜백으로 전달하여 추적을 활성화합니다:
+
 ```python
 # 질문 정의
 question = "What is complexity economics?"
 
-# 애플리케이션 실행
-response = app.invoke({"question": question})
+# 애플리케이션 실행 (Langfuse 핸들러 포함)
+response = app.invoke(
+    {"question": question}, 
+    config={"callbacks": [langfuse_handler]}
+)
 
 # 응답 출력
 print(response["messages"][0].content)
 ```
 
-## MLflow UI에서 Trace 확인
+## Langfuse UI에서 Trace 확인
 
-1. 브라우저에서 `http://localhost:5000`에 접속합니다.
-2. "tracing" 실험을 선택합니다.
-    ![img](./self_hosting_mlflow_0.png)
-3. 실행된 추적을 클릭하여 상세 정보 확인할 수 있습니다.
-    ![img](./self_hosting_mlflow_1.png)
-4. 각 단계별 실행 시간, 입력/출력, 메타데이터 등을 확인할 수 있습니다.
+1. 브라우저에서 `http://localhost:3000`에 접속합니다.
+2. 로그인 후 프로젝트를 선택합니다.
+3. Traces 탭에서 실행된 추적을 확인할 수 있습니다.
+    ![img](./langfuse_0.png)
+4. 각 추적을 클릭하여 상세 정보를 확인할 수 있습니다.
+    ![img](./langfuse_1.png)
+5. 각 단계별 실행 시간, 입력/출력, 메타데이터 등을 확인할 수 있습니다.

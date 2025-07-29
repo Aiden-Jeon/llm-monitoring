@@ -1,10 +1,10 @@
 ---
-sidebar_position: 4
+sidebar_position: 3
 ---
 
 
 
-# LangSmith Prompt Registry
+# 03-Prompt Registry
 
 LangSmith를 사용하여 프롬프트를 버전 관리하고 등록하는 방법에 대해 설명합니다.
 
@@ -19,7 +19,7 @@ LangSmith의 Prompt Registry 기능을 사용하여 프롬프트를 중앙에서
 LangSmith 계정을 생성하여 API 키를 발급받아야 합니다.
 
 :::info
-  [LangSmith 설치 가이드](../installation/langsmith.md)를 참고해 LangSmith 계정을 설정합니다.
+  [LangSmith 설치 가이드](../installation/index.md)를 참고해 LangSmith 계정을 설정합니다.
 :::
 
 ### 2. 환경 변수 설정
@@ -100,7 +100,7 @@ web_search_tool = TavilySearch(max_results=1)
 ```
 
 :::info
-  Tavily API 키는 <a href="../installation/tavily.md">tavily</a>를 참고해 발급 받을 수 있습니다.
+  Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
 :::
 
 ### Prompt Registry

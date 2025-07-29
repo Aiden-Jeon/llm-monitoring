@@ -1,9 +1,8 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 ---
 
-
-# Databricks MLflow Prompt Registry
+# 03-Prompt Registry
 
 Databricks에서 제공하는 Managed MLflow를 사용하여 프롬프트를 버전 관리하고 등록하는 방법에 대해 설명합니다.
 
@@ -18,7 +17,7 @@ Databricks MLflow의 Prompt Registry 기능을 사용하여 프롬프트를 중�
 Databricks Free Edition에 가입하여 MLflow를 사용할 수 있습니다.
 
 :::info
-  [Databricks MLflow 설치 가이드](../installation/databricks-mlflow.md)를 참고해 Databricks 계정을 설정합니다.
+  [Databricks MLflow 설치 가이드](../installation/index.md)를 참고해 Databricks 계정을 설정합니다.
 :::
 
 ### 2. Unity Catalog 설정
@@ -108,7 +107,7 @@ web_search_tool = TavilySearch(max_results=1)
 ```
 
 :::info
-  Tavily API 키는 <a href="../installation/tavily.md">tavily</a>를 참고해 발급 받을 수 있습니다.
+  Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
 :::
 ### Prompt Registry
 

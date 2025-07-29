@@ -1,29 +1,29 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 
-# Self-Hosting MLflow Prompt Registry
+# 02-Tracing
 
-Self-hosting 환경에서 MLflow를 사용하여 프롬프트를 버전 관리하고 등록하는 방법에 대해 설명합니다.
+Self hosting 하는 MLflow에서 Tracing을 사용하는 방법에 대해서 설명합니다.
 
 ## 개요
 
-MLflow의 Prompt Registry 기능을 사용하여 프롬프트를 중앙에서 관리하고 버전을 추적할 수 있습니다. 이를 통해 프롬프트의 변경 사항을 추적하고, 프로덕션 환경에서 안정적인 프롬프트를 사용할 수 있습니다.
+Self-hosting 환경에서 MLflow를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
 
 ## Requirements
-
 ### 1. MLflow 서버 실행
 
-Self-hosting 환경에서 MLflow 서버를 실행해야 합니다.
-
 :::info
-  [LangSmith 설치 가이드](../installation/langsmith.md)를 참고해 LangSmith 계정을 설정합니다.
+  [Self-Hosting MLflow 설치 가이드](../installation/index.md) 를 참고해 mlflow server 를 실행합니다.
 :::
 
 ### 2. 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
+- mlflow 에 로깅하기 위한 환경변수
+- LLM 을 사용하기 위한 환경 변수
+- tavily 를 사용하기 위한 환경 변수
 
 ```bash
 # MLFLOW
@@ -42,22 +42,23 @@ TAVILY_API_KEY=your_tavily_api_key
 
 ## Code
 
-### Environments
+### Environemtns
 
 #### 1. 환경 변수 로드
 
 실행을 위해 필요한 환경 변수를 불러옵니다.
 
 ```python
+import os
 from dotenv import load_dotenv
+from pathlib import Path
 
 # 환경 변수 로드
 load_dotenv(dotenv_path=".env", override=True)
 ```
 
 #### 2. MLflow 설정
-
-노트북에서 사용할 mlflow를 설정합니다.
+노트북에서 사용할 mlflow 를 설정합니다.
 
 ```python
 import mlflow
@@ -71,6 +72,7 @@ mlflow.set_experiment("tracing")
 # LangChain 자동 로깅 활성화
 mlflow.langchain.autolog()
 ```
+
 
 #### 3. LLM 모델 설정
 
@@ -103,93 +105,27 @@ web_search_tool = TavilySearch(max_results=1)
 ```
 
 :::info
-  Tavily API 키는 <a href="../installation/tavily.md">tavily</a>를 참고해 발급 받을 수 있습니다.
+  Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md) 를 참고해 발급 받을 수 있습니다.
 :::
 
-### Prompt Registry
+### LangGraph 애플리케이션 구성
 
-#### 1. 프롬프트 템플릿 정의
-
+#### Prompt
 RAG(Retrieval-Augmented Generation) 애플리케이션을 위한 프롬프트를 정의합니다:
 
 ```python
-# Define the prompt template
-plain_prompt_template = """
-You are an expert at explaining complex topics in simple terms that a 5-year-old could understand. 
+prompt = """You are a professor and expert in explaining complex topics in a way that is easy to understand. 
+Your job is to answer the provided question so that even a 5 year old can understand it. 
+You have provided with relevant background context to answer the question.
 
-Your task is to take a complex question and context information, then provide a clear, simple explanation using:
-- Simple words and concepts
-- Analogies and examples from everyday life
-- Short sentences
-- Engaging and friendly tone
-
-Keep your explanation concise but complete.
-
-Question: {question}
+Question: {question} 
 
 Context: {context}
 
-Please explain this in simple terms that a 5-year-old would understand:
-"""
+Answer:"""
 ```
 
-#### 2. MLflow에 프롬프트 등록
 
-```python
-import mlflow
-
-system_prompt = mlflow.genai.register_prompt(
-    name="concise_prompt",
-    template=plain_prompt_template,
-    # commit_message="Initial version of prompt",
-)
-mlflow.genai.set_prompt_alias("concise_prompt", alias="production", version=system_prompt.version)
-```
-
-#### 3. MLflow에서 프롬프트 로드
-MLflow 에서 prompt 를 불러올 때는 version 혹은 alias 를 사용해 불러옵니다.
-등록한 프롬프트 이름과 다음 규칙을 통해서 프롬프트를 불러올 수 있습니다.
-
-- Version 으로 불러오는 경우 `/` 와 특정 버전을 명시해 불러올 수 있습니다.
-    ```
-    prompts:/{prompt_name}/{version}
-    ```
-- Alias 로 불러오는 경우 `@` 와 alias 이름을 명시해 불러올 수 있습니다.
-    ```
-    prompts:/{prompt_name}@{alias_name}
-    ```
-
-```python
-from langchain_core.prompts import ChatPromptTemplate
-
-# Create LangChain prompt object
-mlflow_prompt = mlflow.genai.load_prompt("prompts:/concise_prompt@production")
-
-langchain_prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            # IMPORTANT: Convert prompt template from double to single curly braces format
-            "system",
-            mlflow_prompt.to_single_brace_format(),
-        ),
-    ]
-)
-```
-
-## MLflow UI에서 Prompt 확인
-
-1. 브라우저에서 `http://localhost:5000`에 접속합니다.
-2. 위쪽 탭에서 "Prompts" 탭을 클릭합니다.
-3. "Prompt Registry" 섹션에서 등록된 프롬프트를 확인할 수 있습니다.
-    ![img](./self_hosting_mlflow_0.png)
-4. 각 프롬프트의 버전과 별칭을 확인할 수 있습니다.
-    ![img](./self_hosting_mlflow_1.png)
-
-
-## Prompt Test
-불러온 프롬프트가 정상적으로 수행되는 지 확인합니다.
-
-### LangGraph 애플리케이션 구성
 #### Graph State
 
 ```python
@@ -248,9 +184,9 @@ def explain(state: GraphState):
     """
     question = state["question"]
     documents = state.get("documents", [])
-
-    formatted = langchain_prompt.format(
-        question=question, context="\n".join([d.page_content for d in documents])
+    formatted = prompt.format(
+        question=question, 
+        context="\n".join([d.page_content for d in documents])
     )
     generation = llm.invoke([HumanMessage(content=formatted)])
     return {"question": question, "messages": [generation]}
@@ -276,11 +212,11 @@ graph.add_edge("explain", END)
 # 그래프 컴파일
 app = graph.compile()
 ```
-
-#### (Optional) Visualize Graph
+#### (Optional) Visulaize Graph
 
 ```python
 from IPython.display import Image, display
+
 
 display(Image(app.get_graph().draw_mermaid_png()))
 ```
@@ -297,3 +233,12 @@ response = app.invoke({"question": question})
 # 응답 출력
 print(response["messages"][0].content)
 ```
+
+## MLflow UI에서 Trace 확인
+
+1. 브라우저에서 `http://localhost:5000`에 접속합니다.
+2. "tracing" 실험을 선택합니다.
+    ![img](./self_hosting_mlflow_0.png)
+3. 실행된 추적을 클릭하여 상세 정보 확인할 수 있습니다.
+    ![img](./self_hosting_mlflow_1.png)
+4. 각 단계별 실행 시간, 입력/출력, 메타데이터 등을 확인할 수 있습니다.

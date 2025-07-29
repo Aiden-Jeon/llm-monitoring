@@ -1,40 +1,39 @@
 ---
-sidebar_position: 4
+sidebar_position: 2
 ---
 
 
+# 02-Tracing
 
-# LangSmith
-
-LangSmith를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
+Databricks에서 제공하는 Managed MLflow를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
 
 ## 개요
 
-LangSmith는 LangChain에서 공식적으로 제공하는 개발자 플랫폼입니다. LangChain 애플리케이션의 실행 과정을 추적하고, 디버깅하며, 성능을 최적화할 수 있는 도구를 제공합니다.
+Databricks는 MLflow의 공식 Managed 서비스를 제공하는 회사 중 하나입니다. Databricks Free Edition을 통해 무료로 MLflow를 사용할 수 있으며, 별도의 서버 설정 없이 바로 사용할 수 있습니다.
 
 ## Requirements
 
-### 1. LangSmith 계정 설정
-
-LangSmith 계정을 생성하여 API 키를 발급받아야 합니다.
+### 1. Databricks 계정 설정
 
 :::info
-  [LangSmith 설치 가이드](../installation/langsmith.md)를 참고해 LangSmith 계정을 설정합니다.
+  [Databricks MLflow 설치 가이드](../installation/index.md)를 참고해 Databricks 계정을 설정합니다.
 :::
+
 
 ### 2. 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
-- LangSmith를 사용하기 위한 환경 변수
+- Databricks Mlflow 를 사용하기 위한 환경 변수
 - LLM을 사용하기 위한 환경 변수
 - Tavily를 사용하기 위한 환경 변수
 
 ```bash
-# LANGSMITH
-LANGCHAIN_TRACING_V2="true"
-LANGSMITH_ENDPOINT="https://api.smith.langchain.com"
-LANGSMITH_API_KEY="<redacted>"
-LANGSMITH_PROJECT="my-llm-project"
+# DATABRICKS MLFLOW
+DATABRICKS_HOST="https://<UNIQUE_ID>.cloud.databricks.com"
+DATABRICKS_TOKEN="<redacted>"
+MLFLOW_TRACKING_URI="databricks"
+MLFLOW_REGISTRY_URI="databricks-uc"
+MLFLOW_EXPERIMENT_ID="<redacted>"
 
 # LLM
 MODEL_NAME=gpt-3.5-turbo
@@ -43,7 +42,6 @@ OPENAI_API_BASE=https://api.openai.com/v1
 
 # TAVILY
 TAVILY_API_KEY=your_tavily_api_key
-
 ```
 
 ## Code
@@ -61,9 +59,18 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=".env", override=True)
 ```
 
-#### 2. LLM 모델 설정
+#### 2. MLflow 설정
 
-LangSmith는 환경 변수를 통해 자동으로 추적이 활성화됩니다.
+Databricks 환경에서는 별도의 추적 서버 설정 없이 자동 로깅만 활성화하면 됩니다.
+
+```python
+import mlflow
+
+# LangChain 자동 로깅 활성화
+mlflow.langchain.autolog()
+```
+
+#### 3. LLM 모델 설정
 
 ```python
 import os
@@ -82,7 +89,7 @@ llm = ChatOpenAI(
 )
 ```
 
-#### 3. Tavily 검색 도구
+#### 4. Tavily 검색 도구
 
 웹 검색을 위한 Tavily 도구를 설정합니다:
 
@@ -94,7 +101,7 @@ web_search_tool = TavilySearch(max_results=1)
 ```
 
 :::info
-  Tavily API 키는 <a href="../installation/tavily.md">tavily</a>를 참고해 발급 받을 수 있습니다.
+  Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
 :::
 ### LangGraph 애플리케이션 구성
 
@@ -212,8 +219,6 @@ display(Image(app.get_graph().draw_mermaid_png()))
 
 ### Graph Test
 
-LangSmith는 환경 변수를 통해 자동으로 추적이 활성화되므로 별도의 설정 없이 실행할 수 있습니다:
-
 ```python
 # 질문 정의
 question = "What is complexity economics?"
@@ -225,12 +230,12 @@ response = app.invoke({"question": question})
 print(response["messages"][0].content)
 ```
 
-## LangSmith UI에서 Trace 확인
+## Databricks UI에서 Trace 확인
 
-1. 브라우저에서 [LangSmith](https://smith.langchain.com/)에 접속합니다.
-2. 로그인 후 프로젝트를 선택합니다.
-3. Runs 탭에서 실행된 추적을 확인할 수 있습니다.
-    ![img](./langsmith_0.png)
-4. 각 추적을 클릭하여 상세 정보를 확인할 수 있습니다.
-    ![img](./langsmith_1.png)
+1. Databricks Workspace에 접속합니다.
+2. 왼쪽 사이드바에서 "Experiments" 탭을 클릭합니다.
+3. 생성한 experiment 에 들어가서 상단의 trace 탭을 선택하면 로깅된 trace 들을 확인할 수 있습니다.
+    ![img](./databricks_mlflow_0.png)
+4. 실행된 추적을 클릭하여 상세 정보를 확인할 수 있습니다.
+    ![img](./databricks_mlflow_1.png)
 5. 각 단계별 실행 시간, 입력/출력, 메타데이터 등을 확인할 수 있습니다.

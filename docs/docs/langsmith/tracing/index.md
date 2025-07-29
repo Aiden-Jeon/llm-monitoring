@@ -1,40 +1,40 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 ---
 
 
-# Self-Hosting Langfuse
 
-Self-hosting 환경에서 Langfuse를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
+# 02-Tracing
+
+LangSmith를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
 
 ## 개요
 
-Langfuse는 LLM 애플리케이션을 위한 오픈소스 관찰성 플랫폼입니다. Self-hosting 환경에서 Langfuse를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
+LangSmith는 LangChain에서 공식적으로 제공하는 개발자 플랫폼입니다. LangChain 애플리케이션의 실행 과정을 추적하고, 디버깅하며, 성능을 최적화할 수 있는 도구를 제공합니다.
 
 ## Requirements
 
-### 1. Langfuse 서버 실행
+### 1. LangSmith 계정 설정
 
-Self-hosting 환경에서 Langfuse 서버를 실행해야 합니다.
+LangSmith 계정을 생성하여 API 키를 발급받아야 합니다.
 
 :::info
-  [Self-Hosting Langfuse 설치 가이드](../installation/self-hosting-langfuse.md)를 참고해 Langfuse 서버를 실행합니다.
+  [LangSmith 설치 가이드](../installation/index.md)를 참고해 LangSmith 계정을 설정합니다.
 :::
-
-envfile 을 이용해 실행할 경우 아래 환경 변수에서 `LANGFUSE_SECRET_KEY`, `LANGFUSE_PUBLIC_KEY` 를 수정할 필요가 없습니다.
 
 ### 2. 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
-- Langfuse를 사용하기 위한 환경 변수
+- LangSmith를 사용하기 위한 환경 변수
 - LLM을 사용하기 위한 환경 변수
 - Tavily를 사용하기 위한 환경 변수
 
 ```bash
-# LANGFUSE
-LANGFUSE_SECRET_KEY=lf_sk_1234567890
-LANGFUSE_PUBLIC_KEY=lf_pk_1234567890
-LANGFUSE_HOST="http://localhost:3000"
+# LANGSMITH
+LANGCHAIN_TRACING_V2="true"
+LANGSMITH_ENDPOINT="https://api.smith.langchain.com"
+LANGSMITH_API_KEY="<redacted>"
+LANGSMITH_PROJECT="my-llm-project"
 
 # LLM
 MODEL_NAME=gpt-3.5-turbo
@@ -43,6 +43,7 @@ OPENAI_API_BASE=https://api.openai.com/v1
 
 # TAVILY
 TAVILY_API_KEY=your_tavily_api_key
+
 ```
 
 ## Code
@@ -60,25 +61,9 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=".env", override=True)
 ```
 
-#### 2. Langfuse 설정
+#### 2. LLM 모델 설정
 
-Langfuse 클라이언트를 초기화하고 연결을 확인합니다.
-
-```python
-from langfuse import get_client
-from langfuse.langchain import CallbackHandler
-
-langfuse = get_client()
-langfuse_handler = CallbackHandler()
-
-# 연결 확인
-if langfuse.auth_check():
-    print("Langfuse client is authenticated and ready!")
-else:
-    print("Authentication failed. Please check your credentials and host.")
-```
-
-#### 3. LLM 모델 설정
+LangSmith는 환경 변수를 통해 자동으로 추적이 활성화됩니다.
 
 ```python
 import os
@@ -97,7 +82,7 @@ llm = ChatOpenAI(
 )
 ```
 
-#### 4. Tavily 검색 도구
+#### 3. Tavily 검색 도구
 
 웹 검색을 위한 Tavily 도구를 설정합니다:
 
@@ -109,7 +94,7 @@ web_search_tool = TavilySearch(max_results=1)
 ```
 
 :::info
-  Tavily API 키는 <a href="../installation/tavily.md">tavily</a>를 참고해 발급 받을 수 있습니다.
+  Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
 :::
 ### LangGraph 애플리케이션 구성
 
@@ -227,28 +212,25 @@ display(Image(app.get_graph().draw_mermaid_png()))
 
 ### Graph Test
 
-Langfuse 핸들러를 콜백으로 전달하여 추적을 활성화합니다:
+LangSmith는 환경 변수를 통해 자동으로 추적이 활성화되므로 별도의 설정 없이 실행할 수 있습니다:
 
 ```python
 # 질문 정의
 question = "What is complexity economics?"
 
-# 애플리케이션 실행 (Langfuse 핸들러 포함)
-response = app.invoke(
-    {"question": question}, 
-    config={"callbacks": [langfuse_handler]}
-)
+# 애플리케이션 실행
+response = app.invoke({"question": question})
 
 # 응답 출력
 print(response["messages"][0].content)
 ```
 
-## Langfuse UI에서 Trace 확인
+## LangSmith UI에서 Trace 확인
 
-1. 브라우저에서 `http://localhost:3000`에 접속합니다.
+1. 브라우저에서 [LangSmith](https://smith.langchain.com/)에 접속합니다.
 2. 로그인 후 프로젝트를 선택합니다.
-3. Traces 탭에서 실행된 추적을 확인할 수 있습니다.
-    ![img](./langfuse_0.png)
+3. Runs 탭에서 실행된 추적을 확인할 수 있습니다.
+    ![img](./langsmith_0.png)
 4. 각 추적을 클릭하여 상세 정보를 확인할 수 있습니다.
-    ![img](./langfuse_1.png)
+    ![img](./langsmith_1.png)
 5. 각 단계별 실행 시간, 입력/출력, 메타데이터 등을 확인할 수 있습니다.
