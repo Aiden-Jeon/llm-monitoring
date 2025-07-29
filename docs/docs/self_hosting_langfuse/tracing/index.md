@@ -6,29 +6,33 @@ sidebar_position: 2
 # 02-Tracing
 
 Self-hosting 환경에서 Langfuse를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
-
-## 개요
-
 Langfuse는 LLM 애플리케이션을 위한 오픈소스 관찰성 플랫폼입니다. Self-hosting 환경에서 Langfuse를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
+
+튜토리얼에서 사용하는 코드는
+[Github](https://github.com/Aiden-Jeon/llm-monitoring/blob/main/notebooks/self_hosting_langfuse/01_tracing.ipynb)
+에서 확인할 수 있습니다.
+
 
 ## Requirements
 
-### 1. Langfuse 서버 실행
+### Langfuse 서버 실행
 
 Self-hosting 환경에서 Langfuse 서버를 실행해야 합니다.
 
 :::info
-  [Self-Hosting Langfuse 설치 가이드](../installation/index.md)를 참고해 Langfuse 서버를 실행합니다.
+  [Self-Hosting Langfuse 설치 가이드](../installation/)를 참고해 Langfuse 서버를 실행합니다.
 :::
 
-envfile 을 이용해 실행할 경우 아래 환경 변수에서 `LANGFUSE_SECRET_KEY`, `LANGFUSE_PUBLIC_KEY` 를 수정할 필요가 없습니다.
-
-### 2. 환경 변수 설정
+### 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
-- Langfuse를 사용하기 위한 환경 변수
-- LLM을 사용하기 위한 환경 변수
-- Tavily를 사용하기 위한 환경 변수
+환경 변수는 3가지 섹션으로 구성되어 있습니다.
+1. Langfuse를 사용하기 위한 환경 변수
+2. LLM을 사용하기 위한 환경 변수
+3. Tavily를 사용하기 위한 환경 변수
+    :::info
+    Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
+    :::
 
 ```bash
 # LANGFUSE
@@ -108,9 +112,6 @@ from langchain_tavily import TavilySearch
 web_search_tool = TavilySearch(max_results=1)
 ```
 
-:::info
-  Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
-:::
 ### LangGraph 애플리케이션 구성
 
 #### Prompt

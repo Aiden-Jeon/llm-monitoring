@@ -20,7 +20,7 @@ function HomepageHeader() {
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/category/00-installation">
+            to="/docs/databricks_mlflow/installation/">
             Docusaurus Tutorial - 5min ⏱️
           </Link>
         </div>

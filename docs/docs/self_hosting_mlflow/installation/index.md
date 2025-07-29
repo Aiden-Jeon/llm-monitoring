@@ -4,8 +4,7 @@ sidebar_position: 1
 
 # 01-Installation
 
-Self hosting 하는 mlflow 방법에 대해서 설명합니다.  
-해당 문서에서는 mlflow 3.1.1 버전을 기준으로 설명합니다.
+Self hosting 하는 mlflow 방법에 대해서 설명합니다. 해당 문서에서는 mlflow 3.1.1 버전을 기준으로 설명합니다.
 
 ## Local
 
@@ -25,6 +24,10 @@ mlflow server --host 0.0.0.0 --port 5000
 ```
 
 ## Remote Server
+
+튜토리얼에서 사용하는 코드는
+[Github](https://github.com/Aiden-Jeon/llm-monitoring/tree/main/docker/mlflow-server)
+에서 확인할 수 있습니다.
 
 리모트 서버에서 mlflow 를 실행할 경우 아래 Docker Compose 를 이용해 실행할 수 있습니다.
 해당 튜토리얼에서는 langfuse 환경과 같이 실행하기 위해서 포트 정보가 변경되어 있습니다.

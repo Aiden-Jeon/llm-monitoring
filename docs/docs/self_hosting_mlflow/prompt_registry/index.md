@@ -6,24 +6,33 @@ sidebar_position: 3
 # 03-Prompt Registry
 
 Self-hosting 환경에서 MLflow를 사용하여 프롬프트를 버전 관리하고 등록하는 방법에 대해 설명합니다.
-
-## 개요
-
 MLflow의 Prompt Registry 기능을 사용하여 프롬프트를 중앙에서 관리하고 버전을 추적할 수 있습니다. 이를 통해 프롬프트의 변경 사항을 추적하고, 프로덕션 환경에서 안정적인 프롬프트를 사용할 수 있습니다.
+
+튜토리얼에서 사용하는 코드는
+[Github](https://github.com/Aiden-Jeon/llm-monitoring/blob/main/notebooks/self_hosting_mlflow/02_prompt.ipynb)
+에서 확인할 수 있습니다.
+
 
 ## Requirements
 
-### 1. MLflow 서버 실행
+### MLflow 서버 실행
 
-Self-hosting 환경에서 MLflow 서버를 실행해야 합니다.
+본 튜토리얼은 docker compose 로 실행 된 remote server 를 기준으로 작성되어 있습니다.
 
 :::info
-  [LangSmith 설치 가이드](../installation/index.md)를 참고해 LangSmith 계정을 설정합니다.
+  [Self-Hosting MLflow 설치 가이드](../installation/) 를 참고해 remote mlflow server 를 실행합니다.
 :::
 
-### 2. 환경 변수 설정
+### 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
+환경 변수는 3가지 섹션으로 구성되어 있습니다.
+1. mlflow 에 로깅하기 위한 환경변수
+2. LLM 을 사용하기 위한 환경 변수
+3. tavily 를 사용하기 위한 환경 변수
+    :::info
+    Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
+    :::
 
 ```bash
 # MLFLOW
@@ -101,10 +110,6 @@ from langchain_tavily import TavilySearch
 # Tavily 검색 도구 설정 (최대 1개 결과)
 web_search_tool = TavilySearch(max_results=1)
 ```
-
-:::info
-  Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
-:::
 
 ### Prompt Registry
 
