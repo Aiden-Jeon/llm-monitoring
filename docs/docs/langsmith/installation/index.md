@@ -1,8 +1,8 @@
 ---
-sidebar_position: 4
+sidebar_position: 1
 ---
 
-# LangSmith
+# 01-Installation
 
 대표적인 솔루션 중 하나인 LangSmith 입니다.
 

@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Self-Hosting Mlflow
+# 01-Installation
 
 Self hosting 하는 mlflow 방법에 대해서 설명합니다.  
 해당 문서에서는 mlflow 3.1.1 버전을 기준으로 설명합니다.
