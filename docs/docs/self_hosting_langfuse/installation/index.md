@@ -7,7 +7,12 @@ sidebar_position: 1
 Self hosting 하는 langfuse 방법에 대해서 설명합니다.  
 해당 문서에서는 langfuse 3 버전을 기준으로 설명합니다.
 
+튜토리얼에서 사용하는 코드는
+[Github](https://github.com/Aiden-Jeon/llm-monitoring/tree/main/docker/langfuse-server)
+에서 확인할 수 있습니다.
+
 ## Remote Server
+
 ### Step 1: langfuse 실행을 위한 docker-compose 파일 작성
 이후 실행 재현을 위해서 각 백엔드 버전을 고정하였으며 최신 버전의 langfuse 실행은 [공식 레포지토리의 docker-compose](https://github.com/langfuse/langfuse/blob/main/docker-compose.yml) 에서 확인할 수 있습니다.
 
@@ -215,12 +220,14 @@ Self hosting 하는 langfuse 방법에 대해서 설명합니다.
  docker compose --env-file init.env up -d
 ```
 
-실행 후 [http://localhost:3000/](http://localhost:3000/) 에 접속해서 화면을 확인합니다.
+## Langfuse UI
 
-![img](./self_hosting_langfuse_0.png)
+1. 실행 후 [http://localhost:3000/](http://localhost:3000/) 에 접속해서 화면을 확인합니다.
+  ![img](./self_hosting_langfuse_0.png)
 
-초기 접속 정보는 Step 2 에서 작성한 정보입니다.
+2. 초기 접속 정보는 Step 2 에서 작성한 정보입니다.
+  - LANGFUSE_INIT_USER_EMAIL=`user@example.com`
+  - LANGFUSE_INIT_USER_PASSWORD=`password123`
 
-로그인 후 생성되어 있는 My Org 에 접속하면 다음과 같은 langfuse 화면을 확인할 수 있습니다.
-
-![img](./self_hosting_langfuse_1.png)
+3. 로그인 후 생성되어 있는 My Org 에 접속하면 다음과 같은 langfuse 화면을 확인할 수 있습니다.
+  ![img](./self_hosting_langfuse_1.png)
