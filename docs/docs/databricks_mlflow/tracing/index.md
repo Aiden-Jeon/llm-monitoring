@@ -22,7 +22,7 @@ Databricks에서 제공하는 Managed MLflow를 사용하여 LangChain 애플리
 
 1. Databricks Mlflow 를 사용하기 위한 환경 변수
     :::info
-    [Databricks MLflow API Key 발급](../installation/#api-key-발급)를 참고해 해 토큰들을 받습니다..
+    [Databricks MLflow API Key 발급](../installation/#api-key-발급)를 참고해 해 토큰들을 받습니다.
     :::
 2. LLM을 사용하기 위한 환경 변수
 3. Tavily를 사용하기 위한 환경 변수
