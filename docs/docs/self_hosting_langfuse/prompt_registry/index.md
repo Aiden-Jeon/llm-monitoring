@@ -3,7 +3,7 @@ sidebar_position: 3
 ---
 
 
-# 03-Prompt Registry
+# 02-Prompt Registry
 
 Self-hosting 환경에서 Langfuse를 사용하여 프롬프트를 버전 관리하고 등록하는 방법에 대해 설명합니다.
 
@@ -26,28 +26,10 @@ Self-hosting 환경에서 Langfuse 서버를 실행해야 합니다.
 ### 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
-환경 변수는 3가지 섹션으로 구성되어 있습니다.
-1. Langfuse를 사용하기 위한 환경 변수
-2. LLM을 사용하기 위한 환경 변수
-3. Tavily를 사용하기 위한 환경 변수
-    :::info
-    Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
-    :::
+:::info
+[환경 변수 설정](../tracing/#Environments) 을 참조해 설정합니다.
+:::
 
-```bash
-# LANGFUSE
-LANGFUSE_SECRET_KEY=lf_sk_1234567890
-LANGFUSE_PUBLIC_KEY=lf_pk_1234567890
-LANGFUSE_HOST="http://localhost:3000"
-
-# LLM
-MODEL_NAME=gpt-3.5-turbo
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_API_BASE=https://api.openai.com/v1
-
-# TAVILY
-TAVILY_API_KEY=your_tavily_api_key
-```
 
 ## Code
 

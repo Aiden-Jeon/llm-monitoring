@@ -3,7 +3,7 @@ sidebar_position: 2
 ---
 
 
-# 02-Tracing
+# 01-Tracing
 
 Self-hosting 환경에서 Langfuse를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.
 Langfuse는 LLM 애플리케이션을 위한 오픈소스 관찰성 플랫폼입니다. Self-hosting 환경에서 Langfuse를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.

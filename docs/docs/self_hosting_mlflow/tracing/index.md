@@ -3,7 +3,7 @@ sidebar_position: 2
 ---
 
 
-# 02-Tracing
+# 01-Tracing
 
 Self hosting 하는 MLflow에서 Tracing을 사용하는 방법에 대해서 설명합니다.  
 Self-hosting 환경에서 MLflow를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.

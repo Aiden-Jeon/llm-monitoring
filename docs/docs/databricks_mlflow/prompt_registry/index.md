@@ -2,14 +2,13 @@
 sidebar_position: 3
 ---
 
-# 03-Prompt Registry
+# 02-Prompt Registry
 
 ## 개요
 
 Databricks에서 제공하는 Managed MLflow를 사용하여 프롬프트를 버전 관리하고 등록하는 방법에 대해 설명합니다.
 
 Databricks MLflow의 Prompt Registry 기능을 사용하여 프롬프트를 중앙에서 관리하고 버전을 추적할 수 있습니다. Databricks Unity Catalog와 통합되어 있어 엔터프라이즈급 프롬프트 관리가 가능합니다.
-
 
 튜토리얼에서 사용하는 코드는
 [Github](https://github.com/Aiden-Jeon/llm-monitoring/blob/main/notebooks/databricks_mlflow/02_prompt.ipynb)
@@ -29,35 +28,9 @@ Databricks 에서 Prompt Registry 를 사용하기 위해서는 Unity Catalog �
 ### 환경 변수 설정
 
 프로젝트 루트에 `.env` 파일을 생성하고 필요한 환경 변수를 설정합니다.
-환경 변수는 3가지 섹션으로 구성되어 있습니다.
-
-1. Databricks Mlflow 를 사용하기 위한 환경 변수
-    :::info
-    [Databricks MLflow API Key 발급](../installation/#api-key-발급)를 참고해 해 토큰들을 받습니다..
-    :::
-2. Tavily를 사용하기 위한 환경 변수
-    :::info
-    Tavily API 키는 [Tavily Key 발급](../../prerequisitres/tavily/index.md)를 참고해 발급 받을 수 있습니다.
-    :::
-3. LLM을 사용하기 위한 환경 변수
-
-
-```bash
-# DATABRICKS MLFLOW
-DATABRICKS_TOKEN=<redacted>
-DATABRICKS_HOST=https://<UNIQUE_ID>.cloud.databricks.com
-MLFLOW_TRACKING_URI=databricks
-MLFLOW_REGISTRY_URI=databricks-uc
-MLFLOW_EXPERIMENT_ID=<redacted>
-
-# LLM
-MODEL_NAME=gpt-3.5-turbo
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_API_BASE=https://api.openai.com/v1
-
-# TAVILY
-TAVILY_API_KEY=your_tavily_api_key
-```
+:::info
+[환경 변수 설정](../tracing/#Environments) 을 참조해 설정합니다.
+:::
 
 ## Code
 

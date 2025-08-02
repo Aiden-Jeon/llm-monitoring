@@ -71,7 +71,7 @@ const config: Config = {
           label: 'Tutorial',
         },
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/Aiden-Jeon/llm-monitoring/',
           label: 'GitHub',
           position: 'right',
         },
