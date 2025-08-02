@@ -3,7 +3,7 @@ sidebar_position: 2
 ---
 
 
-# 02-Tracing
+# 01-Tracing
 
 ## 개요
 LangSmith를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링할 수 있습니다.

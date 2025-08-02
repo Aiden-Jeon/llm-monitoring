@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# 01-Installation
+# 00-Installation
 
 Managed mlflow 는 여러 서비스에서 사용할 수 있습니다.
 [공식 문서](https://mlflow.org/docs/latest/genai/#running-anywhere)에 언급된 managed 서비스를 제공하는 회사는 다음과 같습니다.

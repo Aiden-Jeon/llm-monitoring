@@ -2,14 +2,13 @@
 sidebar_position: 3
 ---
 
-# 03-Prompt Registry
+# 02-Prompt Registry
 
 ## 개요
 
 Databricks에서 제공하는 Managed MLflow를 사용하여 프롬프트를 버전 관리하고 등록하는 방법에 대해 설명합니다.
 
 Databricks MLflow의 Prompt Registry 기능을 사용하여 프롬프트를 중앙에서 관리하고 버전을 추적할 수 있습니다. Databricks Unity Catalog와 통합되어 있어 엔터프라이즈급 프롬프트 관리가 가능합니다.
-
 
 튜토리얼에서 사용하는 코드는
 [Github](https://github.com/Aiden-Jeon/llm-monitoring/blob/main/notebooks/databricks_mlflow/02_prompt.ipynb)

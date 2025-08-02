@@ -3,7 +3,7 @@ sidebar_position: 2
 ---
 
 
-# 02-Tracing
+# 01-Tracing
 
 ## 개요
 Databricks에서 제공하는 Managed MLflow를 사용하여 LangChain 애플리케이션의 실행 과정을 추적하고 모니터링 할 수 있습니다.
